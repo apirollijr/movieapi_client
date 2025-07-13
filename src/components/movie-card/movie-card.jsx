@@ -1,5 +1,5 @@
-// src/components/movie-card/movie-card.jsx
-import React from 'react';
+import './movie-card.scss';
+import PropTypes from 'prop-types';
 
 export const MovieCard = ({ movie, onMovieClick }) => {
   return (
@@ -8,4 +8,12 @@ export const MovieCard = ({ movie, onMovieClick }) => {
       <img src={movie.ImagePath} alt={movie.Title} width="150" />
     </div>
   );
+};
+
+MovieCard.propTypes = {
+  movie: PropTypes.shape({
+    Title: PropTypes.string.isRequired,
+    ImagePath: PropTypes.string.isRequired
+  }).isRequired,
+  onMovieClick: PropTypes.func.isRequired
 };

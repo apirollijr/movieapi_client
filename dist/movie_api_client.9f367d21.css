@@ -1,4 +1,29 @@
 .my-flix {
   color: #4682b4;
 }
+
+.movie-card {
+  text-align: center;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 200px;
+  padding: 10px;
+  box-shadow: 0 2px 4px #0000001a;
+}
+
+.movie-card img {
+  border-radius: 4px;
+  width: 100%;
+  height: auto;
+}
+
+.movie-grid {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  display: flex;
+}
 /*# sourceMappingURL=movie_api_client.9f367d21.css.map */
