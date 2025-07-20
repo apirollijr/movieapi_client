@@ -1,0 +1,15 @@
+.signup-view {
+  max-width: 300px;
+  margin: 1rem auto;
+  @include card;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  button {
+    @extend .btn;
+    width: 100%;
+  }
+}

@@ -1,0 +1,7 @@
+.header {
+  @include flex-center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: $primary-color;
+  color: #fff;
+}

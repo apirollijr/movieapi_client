@@ -1,3 +1,4 @@
+// src/components/signup-view/signup-view.jsx
 import React, { useState } from "react";
 
 export const SignupView = ({ onSignedUp }) => {
@@ -28,46 +29,46 @@ export const SignupView = ({ onSignedUp }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.Username) {
-          onSignedUp();
+          onSignedUp(); // callback to parent
         } else {
-          setError("Signup failed. Try again.");
+          setError(data.message || "Signup failed. Try again.");
         }
       })
-      .catch((e) => setError("Something went wrong."));
+      .catch(() => setError("Something went wrong. Please try again."));
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 border rounded">
+    <form className="signup-view" onSubmit={handleSubmit}>
       <h2>Sign Up</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
       <input
+        className="form-control"
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className="form-control my-2"
       />
       <input
+        className="form-control"
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="form-control my-2"
       />
       <input
+        className="form-control"
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="form-control my-2"
       />
       <input
+        className="form-control"
         type="date"
         value={birthday}
         onChange={(e) => setBirthday(e.target.value)}
-        className="form-control my-2"
       />
-      <button type="submit" className="btn btn-primary">Sign Up</button>
+      <button className="btn" type="submit">Sign Up</button>
     </form>
   );
 };

@@ -32,7 +32,7 @@ export const LoginView = ({ onLoggedIn }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 border rounded">
+    <form className="login-view" onSubmit={handleSubmit}>
       <h2>Login</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <input

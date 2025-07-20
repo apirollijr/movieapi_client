@@ -42,7 +42,7 @@ export const MainView = () => {
   // Show login and signup if not authenticated
   if (!user) {
     return (
-      <div>
+      <div className="auth-container">
         <LoginView onLoggedIn={onLoggedIn} />
         <SignupView onSignedUp={() => alert("Signup successful! Please log in.")} />
       </div>
@@ -51,18 +51,31 @@ export const MainView = () => {
 
   // Movie details view
   if (selectedMovie) {
-    return <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />;
+    return (
+      <MovieView
+        movie={selectedMovie}
+        onBackClick={() => setSelectedMovie(null)}
+      />
+    );
   }
 
   return (
-    <div>
-      <button className="btn btn-danger mb-3" onClick={handleLogout}>Logout</button>
+    <div className="main-view">
+      <button className="btn btn-danger mb-3" onClick={handleLogout}>
+        Logout
+      </button>
       {movies.length === 0 ? (
         <p>Loading movies...</p>
       ) : (
-        movies.map((movie) => (
-          <MovieCard key={movie._id} movie={movie} onMovieClick={setSelectedMovie} />
-        ))
+        <div className="grid">
+          {movies.map((movie) => (
+            <MovieCard
+              key={movie._id}
+              movie={movie}
+              onMovieClick={setSelectedMovie}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
