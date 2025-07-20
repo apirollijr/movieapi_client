@@ -31,7 +31,7 @@ export const MainView = () => {
   useEffect(() => {
     if (!token) return;
 
-    fetch("https://<your-heroku-app>.herokuapp.com/movies", {
+    fetch("https://apirolli-movieapi-7215bc5accc0.herokuapp.com/movies", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => response.json())
