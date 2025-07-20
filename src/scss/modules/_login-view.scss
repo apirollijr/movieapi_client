@@ -1,0 +1,21 @@
+.login-view {
+  max-width: 300px;
+  margin: 1rem auto;
+  @include card;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .error {
+    color: $danger-color;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  button {
+    @extend .btn;
+    width: 100%;
+  }
+}
