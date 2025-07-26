@@ -1,5 +1,7 @@
 // src/components/main-view/main-view.jsx
+
 import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { MovieView } from '../movie-view/movie-view';
 import { MovieCard } from '../movie-card/movie-card';
 import { LoginView } from "../login-view/login-view";
@@ -27,7 +29,6 @@ export const MainView = () => {
     setMovies([]);
   };
 
-  // Fetch movies only if token exists
   useEffect(() => {
     if (!token) return;
 
@@ -39,44 +40,53 @@ export const MainView = () => {
       .catch((error) => console.error("Failed to fetch movies:", error));
   }, [token]);
 
-  // Show login and signup if not authenticated
   if (!user) {
     return (
-      <div className="auth-container">
-        <LoginView onLoggedIn={onLoggedIn} />
-        <SignupView onSignedUp={() => alert("Signup successful! Please log in.")} />
-      </div>
+      <Container className="mt-4">
+        <Row className="justify-content-md-center">
+          <Col md={6}>
+            <LoginView onLoggedIn={onLoggedIn} />
+          </Col>
+        </Row>
+        <Row className="justify-content-md-center mt-3">
+          <Col md={6}>
+            <SignupView onSignedUp={() => alert("Signup successful! Please log in.")} />
+          </Col>
+        </Row>
+      </Container>
     );
   }
 
-  // Movie details view
   if (selectedMovie) {
     return (
-      <MovieView
-        movie={selectedMovie}
-        onBackClick={() => setSelectedMovie(null)}
-      />
+      <Container fluid className="mt-4">
+        <MovieView
+          movie={selectedMovie}
+          onBackClick={() => setSelectedMovie(null)}
+        />
+      </Container>
     );
   }
 
   return (
-    <div className="main-view">
-      <button className="btn btn-danger mb-3" onClick={handleLogout}>
+    <Container className="mt-4">
+      <Button variant="secondary" className="mb-3" onClick={handleLogout}>
         Logout
-      </button>
+      </Button>
       {movies.length === 0 ? (
         <p>Loading movies...</p>
       ) : (
-        <div className="grid">
+        <Row>
           {movies.map((movie) => (
-            <MovieCard
-              key={movie._id}
-              movie={movie}
-              onMovieClick={setSelectedMovie}
-            />
+            <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+              <MovieCard
+                movie={movie}
+                onMovieClick={setSelectedMovie}
+              />
+            </Col>
           ))}
-        </div>
+        </Row>
       )}
-    </div>
+    </Container>
   );
 };
