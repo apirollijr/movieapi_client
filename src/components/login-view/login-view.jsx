@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Form, Button, Alert, Card } from "react-bootstrap";
 
 export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
@@ -28,28 +29,36 @@ export const LoginView = ({ onLoggedIn }) => {
           setError("Invalid login credentials.");
         }
       })
-      .catch((e) => setError("Something went wrong. Please try again."));
+      .catch(() => setError("Something went wrong. Please try again."));
   };
 
   return (
-    <form className="login-view" onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="form-control my-2"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="form-control my-2"
-      />
-      <button type="submit" className="btn btn-primary">Login</button>
-    </form>
+    <Card className="p-4 shadow-sm">
+      <h2 className="mb-3 text-center">Login</h2>
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="username" className="mb-3">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group controlId="password" className="mb-3">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit" className="w-100">
+          Login
+        </Button>
+      </Form>
+    </Card>
   );
 };
