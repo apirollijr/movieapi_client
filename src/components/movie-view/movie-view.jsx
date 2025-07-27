@@ -1,29 +1,40 @@
-// src/components/movie-view/movie-view.jsx
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { useParams, Link } from "react-router-dom";
+import { Container, Row, Col, Button, Card } from "react-bootstrap";
 
-export const MovieView = ({ movie, onBackClick }) => {
+export const MovieView = ({ movies }) => {
+  const { movieId } = useParams();
+  const movie = movies.find((m) => m._id === movieId);
+
+  if (!movie) return <p className="text-center mt-5">Movie not found.</p>;
+
   return (
-    <Card className="shadow-sm p-3 mx-auto" style={{ maxWidth: "400px" }}>
-      <Card.Img
-        variant="top"
-        src={movie.ImagePath}
-        alt={movie.Title}
-        className="mb-3 img-fluid"
-      />
-      <Card.Body>
-        <Card.Title className="mb-2 text-center">{movie.Title}</Card.Title>
-        <Card.Text>{movie.Description}</Card.Text>
-        <p>
-          <strong>Genre:</strong> {movie.Genre?.Name}
-        </p>
-        <p>
-          <strong>Director:</strong> {movie.Director?.Name}
-        </p>
-        <Button variant="secondary" onClick={onBackClick} className="w-100">
-          Back
-        </Button>
-      </Card.Body>
-    </Card>
+    <Container className="mt-4">
+      <Row className="justify-content-center">
+        <Col xs={12} md={8} lg={6}>
+          <Card className="shadow-sm">
+            <Card.Img
+              variant="top"
+              src={movie.ImagePath}
+              alt={movie.Title}
+              style={{ maxHeight: "450px", objectFit: "cover" }}
+            />
+            <Card.Body className="text-center">
+              <Card.Title>{movie.Title}</Card.Title>
+              <Card.Text>{movie.Description}</Card.Text>
+              <Card.Text>
+                <strong>Genre:</strong> {movie.Genre?.Name}
+              </Card.Text>
+              <Card.Text>
+                <strong>Director:</strong> {movie.Director?.Name}
+              </Card.Text>
+              <Button as={Link} to="/" variant="secondary">
+                Back
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
