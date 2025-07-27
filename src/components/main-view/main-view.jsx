@@ -38,19 +38,27 @@ export const MainView = () => {
           </>
         ) : (
           <>
-            <Route path="/" element={
-              <Container>
-                <Row className="mt-4 g-5">
-                  {movies.map((movie) => (
-                    <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-                      <MovieCard movie={movie} />
-                    </Col>
-                  ))}
-                </Row>
-              </Container>
-            } />
+            <Route
+              path="/"
+              element={
+                <Container>
+                  <Row className="mt-4 g-5">
+                    {movies.map((movie) => (
+                      <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+                        <MovieCard
+                          movie={movie}
+                          user={user}
+                          token={token}
+                          setUser={setUser}
+                        />
+                      </Col>
+                    ))}
+                  </Row>
+                </Container>
+              }
+            />
             <Route path="/movies/:movieId" element={<MovieView movies={movies} />} />
-            <Route path="/profile" element={<ProfileView user={user} />} />
+            <Route path="/profile" element={<ProfileView user={user} token={token} movies={movies} setUser={setUser} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
