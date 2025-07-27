@@ -1,11 +1,11 @@
-// src/components/main-view/main-view.jsx
-
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
-import { MovieView } from '../movie-view/movie-view';
-import { MovieCard } from '../movie-card/movie-card';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { MovieCard } from "../movie-card/movie-card";
+import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
+import NavigationBar from "../navigation-bar/navigation-bar"; // We'll create this
+import ProfileView from "../profile-view/profile-view";       // Create this later
 
 export const MainView = () => {
   const [user, setUser] = useState(
@@ -13,80 +13,45 @@ export const MainView = () => {
   );
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
 
-  const onLoggedIn = (user, token) => {
-    setUser(user);
-    setToken(token);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("token", token);
-  };
-
-  const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
-    setToken("");
-    setMovies([]);
-  };
-
+  // Fetch movies if logged in
   useEffect(() => {
-    if (!token) return;
-
-    fetch("https://apirolli-movieapi-7215bc5accc0.herokuapp.com/movies", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => response.json())
-      .then((data) => setMovies(data))
-      .catch((error) => console.error("Failed to fetch movies:", error));
+    if (token) {
+      fetch("https://your-movie-api/movies", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setMovies(data))
+        .catch((err) => console.error(err));
+    }
   }, [token]);
 
-  if (!user) {
-    return (
-      <Container className="mt-4">
-        <Row className="justify-content-md-center">
-          <Col md={6}>
-            <LoginView onLoggedIn={onLoggedIn} />
-          </Col>
-        </Row>
-        <Row className="justify-content-md-center mt-3">
-          <Col md={6}>
-            <SignupView onSignedUp={() => alert("Signup successful! Please log in.")} />
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-
-  if (selectedMovie) {
-    return (
-      <Container fluid className="mt-4">
-        <MovieView
-          movie={selectedMovie}
-          onBackClick={() => setSelectedMovie(null)}
-        />
-      </Container>
-    );
-  }
-
   return (
-    <Container className="mt-4">
-      <Button variant="secondary" className="mb-3" onClick={handleLogout}>
-        Logout
-      </Button>
-      {movies.length === 0 ? (
-        <p>Loading movies...</p>
-      ) : (
-        <Row>
-          {movies.map((movie) => (
-            <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-              <MovieCard
-                movie={movie}
-                onMovieClick={setSelectedMovie}
-              />
-            </Col>
-          ))}
-        </Row>
-      )}
-    </Container>
+    <Router>
+      <NavigationBar user={user} setUser={setUser} />
+      <Routes>
+        {/* Redirect to login if not authenticated */}
+        {!user ? (
+          <>
+            <Route path="/login" element={<LoginView onLoggedIn={(u, t) => { setUser(u); setToken(t); }} />} />
+            <Route path="/signup" element={<SignupView />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={
+              <div className="movies-grid">
+                {movies.map((movie) => (
+                  <MovieCard key={movie._id} movie={movie} />
+                ))}
+              </div>
+            } />
+            <Route path="/movies/:movieId" element={<MovieView movies={movies} />} />
+            <Route path="/profile" element={<ProfileView user={user} />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
+        )}
+      </Routes>
+    </Router>
   );
 };

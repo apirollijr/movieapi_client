@@ -1,24 +1,13 @@
-// src/components/movie-card/movie-card.jsx
-import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
-export const MovieCard = ({ movie, onMovieClick }) => {
+export const MovieCard = ({ movie }) => {
   return (
-    <Card className="h-100 shadow-sm d-flex flex-column">
-      <Card.Img variant="top" src={movie.ImagePath} alt={movie.Title} />
-      <Card.Body className="d-flex flex-column">
-        <Card.Title>{movie.Title}</Card.Title>
-        <Card.Text className="flex-grow-1">{movie.Description}</Card.Text>
-        <div className="mt-auto">
-          <Button
-            variant="primary"
-            className="w-100"
-            onClick={() => onMovieClick(movie)}
-          >
-            Open
-          </Button>
-        </div>
-      </Card.Body>
-    </Card>
+    <div className="movie-card">
+      <img src={movie.ImagePath} alt={movie.Title} />
+      <h3>{movie.Title}</h3>
+      <Link to={`/movies/${movie._id}`} className="btn btn-primary">
+        Open
+      </Link>
+    </div>
   );
 };
