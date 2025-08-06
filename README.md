@@ -125,7 +125,7 @@ myFlix API (server-side)
 👨‍💻 Author
 Anthony Pirolli
 
-Portfolio: dothingjob.com
+Portfolio: anthonypirollijr.com
 GitHub: @apirollijr
 
 📝 License
