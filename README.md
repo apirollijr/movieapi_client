@@ -1,39 +1,44 @@
-# 🎬 myFlix Client (React)
+🎬 myFlix Client (React)
+This is the client-side application for the myFlix Movie API, built using React. It allows users to browse a collection of movies, view detailed information, and manage their user profiles.
 
-This is the **client-side** application for the **myFlix Movie API**, built using **React**. It allows users to browse a collection of movies, view detailed information, and manage their user profiles.
+This project connects to the myFlix API, which handles authentication, user data, and movie data.
 
-> This project connects to the [myFlix API](https://github.com/your-username/myFlix-api) which handles authentication, user data, and movie data.
+🚀 Features
+🔐 JWT-based authentication (login/signup)
 
----
+🎥 View all movies
 
-## 🚀 Features
+🎞️ Filter by search term or genre
 
-- 🔐 JWT-based authentication (login/signup)
-- 🎥 View all movies
-- 🎞️ Filter by genre or director
-- ❤️ Add/remove favorite movies
-- 🧑 User profile view and updates
-- 📱 Responsive design using Bootstrap
+🎬 Filter by director
 
----
+❤️ Add/remove favorite movies
 
-## 🧰 Technologies Used
+🧑 User profile view and updates
 
-- React
-- React Router
-- Axios
-- Bootstrap
-- Parcel (or Webpack)
-- ESLint + Prettier
-- JWT for authentication
+📱 Responsive design with Bootstrap
 
----
+🧰 Technologies Used
+React
 
-## 🛠️ Installation
+React Router
 
-1. **Clone this repository**
+Axios (or Fetch API)
 
-```bash
+Bootstrap
+
+Parcel (or Webpack/Vite)
+
+ESLint + Prettier
+
+JWT for authentication
+
+🛠️ Installation
+Clone this repository
+
+bash
+Copy
+Edit
 git clone https://github.com/your-username/myflix-client.git
 cd myflix-client
 Install dependencies
@@ -46,10 +51,18 @@ Set environment variables
 
 Create a .env file in the root directory:
 
-env
+For Create React App:
+
+ini
 Copy
 Edit
-REACT_APP_API_URL=http://localhost:8080
+REACT_APP_API_BASE_URL=http://localhost:8080
+For Vite/Parcel:
+
+ini
+Copy
+Edit
+VITE_API_BASE_URL=http://localhost:8080
 Update this URL if your API is deployed (e.g., Heroku).
 
 Start the app
@@ -66,8 +79,7 @@ npm run lint	Lint the code with ESLint
 npm run format	Format code using Prettier
 
 📸 Screenshots
-<!-- You can replace with your own screenshots -->
-
+<!-- Replace with your own screenshots -->
 
 
 📁 Project Structure
@@ -81,6 +93,7 @@ src/
 │   ├── movie-card/
 │   ├── movie-view/
 │   ├── profile-view/
+│   ├── filter-bar/
 │   └── ...
 ├── scss/
 ├── App.jsx
@@ -93,12 +106,25 @@ bash
 Copy
 Edit
 npm run build
-Deploy the contents of the dist/ folder to your preferred static hosting platform (e.g., Netlify, Vercel, GitHub Pages).
+Deploy the build output to a static hosting service:
+
+Netlify
+
+Build command: npm run build
+
+Publish directory: dist/ (Vite/Parcel) or build/ (CRA)
+
+Set your API base URL as an environment variable (VITE_API_BASE_URL or REACT_APP_API_BASE_URL).
+
+For client-side routing, add a redirect rule to send all paths to index.html.
+
+Vercel / GitHub Pages also work with similar settings.
 
 🔐 Authentication
-This app uses JWT (JSON Web Tokens) for secure access. Users must register and log in to get a token which is stored in localStorage and used for all protected requests to the API.
+This app uses JWT (JSON Web Tokens) for secure access.
+Users must register and log in to get a token, which is stored in localStorage and sent with all protected API requests.
 
-📬 API Endpoints (used)
+📬 API Endpoints Used
 POST /login – Login and receive JWT token
 
 POST /users – Register new user
@@ -124,7 +150,6 @@ myFlix API (server-side)
 
 👨‍💻 Author
 Anthony Pirolli
-
 Portfolio: anthonypirollijr.com
 GitHub: @apirollijr
 
