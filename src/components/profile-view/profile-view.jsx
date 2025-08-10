@@ -1,113 +1,103 @@
-import React, { useState, useEffect } from "react";
-import { Row, Col, Card, Button, Form } from "react-bootstrap";
-import { MovieCard } from "../movie-card/movie-card";
+import React, { useMemo } from "react";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
 
-export default function ProfileView({ user, token, movies, setUser }) {
-  const [favoriteMovies, setFavoriteMovies] = useState([]);
+/**
+ * Props:
+ * - user: current user object
+ * - movies: full movies array
+ * - favoriteIds: string[] of movie IDs
+ * - onBack: () => void
+ * - onOpen: (movie) => void
+ * - onToggleFavorite: (movie) => void
+ * - favoriteBusyMap: { [movieId]: boolean }
+ */
+export const ProfileView = ({
+  user,
+  movies = [],
+  favoriteIds = [],
+  onBack,
+  onOpen,
+  onToggleFavorite,
+  favoriteBusyMap = {}
+}) => {
+  const username = user?.Username || user?.username;
+  const email = user?.Email || user?.email;
 
-  useEffect(() => {
-    if (user?.FavoriteMovies?.length > 0) {
-      const favs = movies.filter((m) => user.FavoriteMovies.includes(m._id));
-      setFavoriteMovies(favs);
-    }
-  }, [user, movies]);
-
-  // Remove movie from favorites
-  const handleRemoveFavorite = (movieId) => {
-    fetch(`https://apirolli-movieapi-7215bc5accc0.herokuapp.com/users/${user.Username}/favorites/${movieId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then(async (res) => {
-        const text = await res.text();
-        console.log("[DEBUG] Remove Favorite Response:", text);
-        if (!res.ok) throw new Error(`Error ${res.status}: ${text}`);
-        return JSON.parse(text);
-      })
-      .then((data) => {
-        alert(`Movie removed from ${user.Username}'s favorites!`);
-        localStorage.setItem("user", JSON.stringify(data));
-        setUser(data);
-      })
-      .catch((err) => console.error("Remove favorite error:", err));
-  };
+  const favoriteMovies = useMemo(() => {
+    if (!Array.isArray(movies) || !Array.isArray(favoriteIds)) return [];
+    const idSet = new Set(favoriteIds.map(String));
+    return movies.filter((m) => idSet.has(String(m?._id)));
+  }, [movies, favoriteIds]);
 
   return (
-    <Row className="mt-4">
-      {/* User Info Section */}
-      <Col md={4}>
-        <Card className="mb-4 p-3">
-          <h5>User Information</h5>
-          <p><strong>Username:</strong> {user.Username}</p>
-          <p><strong>Email:</strong> {user.Email}</p>
-          <p><strong>Birthday:</strong> {new Date(user.Birthday).toDateString()}</p>
-          <Button variant="danger">Delete Account</Button>
-        </Card>
+    <div className="container px-0">
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <h4 className="m-0">Profile</h4>
+        {onBack && (
+          <Button type="button" variant="secondary" onClick={onBack}>
+            Back to Home
+          </Button>
+        )}
+      </div>
 
-        {/* Update Form */}
-        <Card className="p-3">
-          <h5>Update Info</h5>
-          <Form>
-            <Form.Group controlId="formUsername" className="mb-2">
-              <Form.Label>Username</Form.Label>
-              <Form.Control type="text" defaultValue={user.Username} />
-            </Form.Group>
-            <Form.Group controlId="formPassword" className="mb-2">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="New Password" />
-            </Form.Group>
-            <Form.Group controlId="formEmail" className="mb-2">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" defaultValue={user.Email} />
-            </Form.Group>
-            <Form.Group controlId="formBirthday" className="mb-3">
-              <Form.Label>Birthday</Form.Label>
-              <Form.Control type="date" />
-            </Form.Group>
-            <Button variant="primary">Update</Button>
-          </Form>
-        </Card>
-      </Col>
+      <Card className="mb-3">
+        <Card.Body>
+          <div className="row">
+            <div className="col-12 col-md-6">
+              <p className="mb-1"><strong>Username:</strong> {username}</p>
+              {email && <p className="mb-0"><strong>Email:</strong> {email}</p>}
+            </div>
+            <div className="col-12 col-md-6">
+              <p className="mb-0"><strong>Favorites:</strong> {favoriteMovies.length}</p>
+            </div>
+          </div>
+        </Card.Body>
+      </Card>
 
-      {/* Favorite Movies Section */}
-      <Col md={8}>
-        <h5>Favorite Movies</h5>
-        <Row className="g-4">
-          {favoriteMovies.length === 0 ? (
-            <p>No favorite movies yet.</p>
-          ) : (
-            favoriteMovies.map((movie) => (
-              <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
-                <Card className="h-100 shadow-sm">
-                  <Card.Img
-                    variant="top"
-                    src={movie.ImagePath}
-                    alt={movie.Title}
-                    style={{ height: "300px", objectFit: "cover" }}
-                  />
+      <h5 className="mb-2">Your Favorite Movies</h5>
+      {favoriteMovies.length === 0 ? (
+        <div className="text-muted">No favorites yet.</div>
+      ) : (
+        <div className="row g-3">
+          {favoriteMovies.map((movie) => {
+            const busy = !!favoriteBusyMap[movie._id];
+            const title = movie?.Title || "Untitled";
+            const img = movie?.ImagePath || "https://via.placeholder.com/600x900?text=No+Poster";
+            return (
+              <div key={movie._id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+                <Card className="h-100 movie-card shadow-sm">
+                  <Card.Img variant="top" src={img} alt={title} className="card-img-top" />
                   <Card.Body className="d-flex flex-column">
-                    <Card.Title className="text-truncate">{movie.Title}</Card.Title>
-                    <div className="mt-auto">
-                      <Button variant="primary" className="me-2" href={`/movies/${movie._id}`}>
+                    <Card.Title as="h6" className="mb-1 text-truncate-2">{title}</Card.Title>
+                    <div className="mt-auto d-flex gap-2">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        size="sm"
+                        className="flex-fill"
+                        onClick={() => onOpen && onOpen(movie)}
+                      >
                         Open
                       </Button>
                       <Button
-                        variant="outline-danger"
-                        onClick={() => handleRemoveFavorite(movie._id)}
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        className="flex-fill"
+                        disabled={busy}
+                        onClick={() => onToggleFavorite && onToggleFavorite(movie)}
                       >
-                        Remove Favorite
+                        {busy ? "Working…" : "Remove Favorite"}
                       </Button>
                     </div>
                   </Card.Body>
                 </Card>
-              </Col>
-            ))
-          )}
-        </Row>
-      </Col>
-    </Row>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
-}
+};

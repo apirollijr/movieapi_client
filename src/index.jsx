@@ -1,18 +1,18 @@
+import React from "react";
 import { createRoot } from "react-dom/client";
-import { MainView } from './components/main-view/main-view';
+import { BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import './index.scss';
 
+import { MainView } from "./components/main-view/main-view";
+import "./index.scss";
 
-
-
-
-
-
-const App = () => {
- return <MainView />;
-};
-
-const container = document.querySelector("#root");
+const container = document.getElementById("app"); // or "root" depending on your index.html
 const root = createRoot(container);
-root.render(<App />);
+
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <MainView />
+    </BrowserRouter>
+  </React.StrictMode>
+);
