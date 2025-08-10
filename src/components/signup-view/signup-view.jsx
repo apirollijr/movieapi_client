@@ -1,24 +1,23 @@
 // src/components/signup-view/signup-view.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const API_URL =
-  import.meta?.env?.VITE_API_URL ||
+  process.env.REACT_APP_API_URL ||
   process.env.API_URL ||
   "https://apirolli-movieapi-7215bc5accc0.herokuapp.com";
 
-export const SignupView = () => {
-  const navigate = useNavigate();
+export const SignupView = ({ onBackToLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [birthday, setBirthday] = useState(""); // "YYYY-MM-DD"
+  const [birthday, setBirthday] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
+
     setError("");
     setSubmitting(true);
 
@@ -35,12 +34,11 @@ export const SignupView = () => {
       });
 
       if (res.status === 201 || res.status === 200) {
-        // ✅ Successfully registered — go to Login page
-        navigate("/login", { replace: true });
+        // ✅ Success — switch back to login screen
+        if (typeof onBackToLogin === "function") onBackToLogin();
         return;
       }
 
-      // Show backend validation messages
       const text = await res.text();
       if (res.status === 409 || /exists/i.test(text)) {
         setError("Username already exists. Try a different one.");
