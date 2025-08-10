@@ -1,9 +1,11 @@
 // src/components/signup-view/signup-view.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta?.env?.VITE_API_URL || process.env.API_URL || "https://apirolli-movieapi-7215bc5accc0.herokuapp.com";
 
 export const SignupView = ({ onLoggedIn }) => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -47,6 +49,9 @@ export const SignupView = ({ onLoggedIn }) => {
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
         if (typeof onLoggedIn === "function") onLoggedIn(user, token);
+
+        navigate("/", { replace: true });
+
         return;
       }
 
