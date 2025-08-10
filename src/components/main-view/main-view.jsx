@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { Row, Col, Container } from "react-bootstrap";
+import React, { useEffect, useMemo, useState } from "react";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
-import { LoginView } from "../login-view/login-view";
-import { SignupView } from "../signup-view/signup-view";
-import NavigationBar from "../navigation-bar/navigation-bar";
-import ProfileView from "../profile-view/profile-view";
+import { FilterBar } from "../filter-bar/filter-bar";
 
 export const MainView = () => {
   const [user, setUser] = useState(
@@ -14,55 +9,83 @@ export const MainView = () => {
   );
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [movies, setMovies] = useState([]);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
+  // NEW: filter state
+  const [search, setSearch] = useState("");
+  const [genre, setGenre] = useState("");
 
   useEffect(() => {
-    if (token) {
-      fetch("https://apirolli-movieapi-7215bc5accc0.herokuapp.com/movies", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setMovies(data))
-        .catch((err) => console.error(err));
-    }
+    if (!token) return;
+    fetch(`${import.meta.env.VITE_API_BASE_URL || process.env.REACT_APP_API_BASE_URL}/movies`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((res) => res.json())
+      .then((data) => setMovies(data))
+      .catch((err) => console.error("Failed to load movies", err));
   }, [token]);
 
+  // Unique list of genres for dropdown
+  const genres = useMemo(() => {
+    const set = new Set(
+      movies
+        .map((m) => m?.Genre?.Name)
+        .filter(Boolean)
+        .map((s) => s.trim())
+    );
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [movies]);
+
+  // Apply filters
+  const filteredMovies = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return movies.filter((m) => {
+      const matchesText =
+        !q ||
+        m.Title?.toLowerCase().includes(q) ||
+        m.Description?.toLowerCase().includes(q);
+
+      const matchesGenre = !genre || m?.Genre?.Name === genre;
+
+      return matchesText && matchesGenre;
+    });
+  }, [movies, search, genre]);
+
+  if (!user) {
+    // show login/signup (whatever you already have)
+    // return <LoginView ... />
+  }
+
   return (
-    <Router>
-      <NavigationBar user={user} setUser={setUser} />
-      <Routes>
-        {!user ? (
-          <>
-            <Route path="/login" element={<LoginView onLoggedIn={(u, t) => { setUser(u); setToken(t); }} />} />
-            <Route path="/signup" element={<SignupView />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </>
-        ) : (
-          <>
-            <Route
-              path="/"
-              element={
-                <Container>
-                  <Row className="mt-4 g-5">
-                    {movies.map((movie) => (
-                      <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-                        <MovieCard
-                          movie={movie}
-                          user={user}
-                          token={token}
-                          setUser={setUser}
-                        />
-                      </Col>
-                    ))}
-                  </Row>
-                </Container>
-              }
-            />
-            <Route path="/movies/:movieId" element={<MovieView movies={movies} />} />
-            <Route path="/profile" element={<ProfileView user={user} token={token} movies={movies} setUser={setUser} />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-      </Routes>
-    </Router>
+    <div className="container py-3">
+      <FilterBar
+        search={search}
+        setSearch={setSearch}
+        genre={genre}
+        setGenre={setGenre}
+        genres={genres}
+      />
+
+      {selectedMovie ? (
+        <MovieView
+          movie={selectedMovie}
+          onBackClick={() => setSelectedMovie(null)}
+        />
+      ) : (
+        <div className="row g-3">
+          {filteredMovies.map((movie) => (
+            <div key={movie._id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+              <MovieCard
+                movie={movie}
+                onOpen={() => setSelectedMovie(movie)}
+              />
+            </div>
+          ))}
+          {filteredMovies.length === 0 && (
+            <div className="text-muted">No movies match your filter.</div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
