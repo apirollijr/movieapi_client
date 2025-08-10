@@ -50,7 +50,7 @@ export const SignupView = ({ onLoggedIn }) => {
         localStorage.setItem("token", token);
         if (typeof onLoggedIn === "function") onLoggedIn(user, token);
 
-        navigate("/", { replace: true });
+        navigate("/login", { replace: true });
 
         return;
       }
