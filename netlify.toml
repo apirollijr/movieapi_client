@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  API_BASE_URL = "https://apirolli-movieapi-7215bc5accc0.herokuapp.com"
+
+# Send every path to index.html (so React Router can handle it)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
